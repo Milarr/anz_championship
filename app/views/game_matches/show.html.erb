@@ -1,0 +1,44 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Year:</strong>
+  <%= @game_match.year %>
+</p>
+
+<p>
+  <strong>Round:</strong>
+  <%= @game_match.round %>
+</p>
+
+<p>
+  <strong>Date:</strong>
+  <%= @game_match.date %>
+</p>
+
+<p>
+  <strong>Home team:</strong>
+  <%= @game_match.home_team %>
+</p>
+
+<p>
+  <strong>Away team:</strong>
+  <%= @game_match.away_team %>
+</p>
+
+<p>
+  <strong>Home score:</strong>
+  <%= @game_match.home_score %>
+</p>
+
+<p>
+  <strong>Away score:</strong>
+  <%= @game_match.away_score %>
+</p>
+
+<p>
+  <strong>Venue:</strong>
+  <%= @game_match.venue %>
+</p>
+
+<%= link_to 'Edit', edit_game_match_path(@game_match) %> |
+<%= link_to 'Back', game_matches_path %>
