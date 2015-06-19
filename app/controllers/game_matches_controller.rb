@@ -5,6 +5,7 @@ class GameMatchesController < ApplicationController
   # GET /game_matches.json
   def index
     @game_matches = GameMatch.all
+    GameMatch.import
   end
 
   # GET /game_matches/1
