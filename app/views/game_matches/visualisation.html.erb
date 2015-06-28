@@ -56,14 +56,6 @@
   svg.append("circle")
     .attr("r", outerRadius);
 
-  var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .html(function(d) {
-      return d + ": <span style='color:orangered'>" + data.labels[1] + "</span>";
-    });
-
-  svg.call(tip);
-
   layout.matrix(data.matrix);
 
 
