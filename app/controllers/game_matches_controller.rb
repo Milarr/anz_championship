@@ -69,7 +69,11 @@ class GameMatchesController < ApplicationController
     end
     @game_match_data = {
       labels: @team_labels,
-      matrix: generate_data(2013)
+      year_2008: generate_data(2008),
+      year_2009: generate_data(2009),
+      year_2011: generate_data(2011),
+      year_2012: generate_data(2012),
+      year_2013: generate_data(2013)
     }
   end
 

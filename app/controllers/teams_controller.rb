@@ -76,22 +76,17 @@ class TeamsController < ApplicationController
 
   def generate_data(year)
     team_data = []
-    other_team_data = []
+
     i = 0
-    GameMatch.where(year: year).where(home_team: "Central Pulse").all.each do |game|
-      team_data << {x: i, y: game.home_score}
-      other_team_data << {x: i, y: game.away_score}
+    GameMatch.where(year: year).where(home_team: "Southern Steel").all.each do |game|
+      team_data << {i: i, score: [game.home_score, game.away_score], x: game.home_score, y: game.away_score, other_team_name: game.away_team}
       i += 1
     end
-    # GameMatch.where(away_team: "Central Pulse").each do |game|
-    #   team_data << {x: i, y: game.away_score}
-    #   other_team_data << {x: i, y: game.home_score}
-    #   i += 1
-    # end
-    {
-      our_team: team_data,
-      other_team: other_team_data
-    }
+    GameMatch.where(away_team: "Southern Steel").each do |game|
+      team_data << {i: i, score: [game.away_score, game.home_score], x: game.away_score, y: game.home_score, other_team_name: game.home_team}
+      i += 1
+    end
+    team_data
   end
 
   private

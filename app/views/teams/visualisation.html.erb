@@ -1,1 +1,103 @@
 <h1 id="team_visualisation" data="<%= @team_overview_data.to_json %>">Team Matches</h1>
+
+
+<head>
+    <meta charset="utf-8">
+    <title>D3: Stack layout stacked bar chart</title>
+      <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <style type="text/css">
+      .axis text {
+        font: 10px sans-serif;
+      }
+
+      .axis path, .axis line {
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="viz"></div>
+    <script type="text/javascript">
+      var team_data = JSON.parse($('#team_visualisation').attr('data'));
+
+      var barHeights = [];
+      var barNames = [];
+      var tempSum = 0;
+      for (var i=0; i<team_data.data_set.length; i++) {
+        tempValues = d3.values(team_data.data_set[i].score);
+        tempSum = 0;
+        for (var j=0; j<tempValues.length; j++) {tempSum = tempSum + tempValues[j];}
+        barHeights.push(tempSum);
+        barNames.push(team_data.data_set[i].other_team_name);
+      };
+
+      var margin = {top: 10, right: 10, bottom: 30, left: 30},
+          width = 1000 - margin.left - margin.right,
+          height = 300 - margin.top - margin.bottom;
+
+      var x = d3.scale.ordinal()
+          .domain(d3.range(barNames.length))
+          .rangeRoundBands([0, width], 0.176);
+
+      var y = d3.scale.linear()
+          .domain([0, d3.max(barHeights)])
+          .range([height, 0]);
+
+      var colors = d3.scale.category10();
+
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom");
+
+      var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient("left");
+
+      var svg = d3.select("#viz").append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+      //add a g element for each bar
+      var bargroups = svg.append("g")
+          .attr("class", "bars")
+          .selectAll("g")
+          .data(team_data.data_set)
+        .enter().append("g")
+          .attr("id", function(d) {return d.name;});
+      //sub-selection for rect elements
+      var layerName = d3.keys(team_data.data_set[0].score);
+      var barrects = bargroups.selectAll("rect")
+          .data(function(d) {
+              var temparray = [];
+              var tempsum = 0;
+              for (var i=0; i<layerName.length; i++) {
+                  temparray.push({height: d.score[i], y0: tempsum + d.score[i]});
+                  tempsum = tempsum + d.score[i];
+              }
+              return temparray;
+          })
+        .enter().append("rect")
+          .attr({
+              "x": function(d,i,j) {
+                debugger
+                return x(j);},
+              "y": function(d) {return y(d.y0);},
+              "width": x.rangeBand(),
+              "height": function(d) {return height - y(d.height);}
+          })
+          .style("fill", function(d,i,j) {return colors(i)})
+          .style("stroke", "black");
+    </script>
+  </body>
