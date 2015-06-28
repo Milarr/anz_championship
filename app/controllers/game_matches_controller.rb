@@ -63,26 +63,25 @@ class GameMatchesController < ApplicationController
   end
 
   def visualisation
-    @game_match_data = generate_data
+    @team_labels = []
+    Team.all.each do |team|
+      @team_labels << team.name
+    end
+    @game_match_data = {
+      label: @team_labels,
+      year_2008: generate_data(2008)
+    }
   end
 
-  def generate_data
-    team_labels = []
-    Team.all.each do |team|
-      team_labels << team.name
-    end
-
-    team_matrix = Array.new(team_labels.count) { Array.new(team_labels.count, 0)}
-    GameMatch.where(year: 2008).all.each do |match|
-      home_team_index = team_labels.find_index(match.home_team)
-      away_team_index = team_labels.find_index(match.away_team)
+  def generate_data(year)
+    team_matrix = Array.new(@team_labels.count) { Array.new(@team_labels.count, 0)}
+    GameMatch.where(year: year).all.each do |match|
+      home_team_index = @team_labels.find_index(match.home_team)
+      away_team_index = @team_labels.find_index(match.away_team)
       team_matrix[home_team_index][away_team_index] += 1
       team_matrix[away_team_index][home_team_index] += 1
     end
-    {
-      labels: team_labels,
-      matrix: team_matrix
-    }
+    team_matrix
   end
 
   private
