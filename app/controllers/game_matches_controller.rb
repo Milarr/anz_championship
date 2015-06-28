@@ -68,8 +68,8 @@ class GameMatchesController < ApplicationController
       @team_labels << team.name
     end
     @game_match_data = {
-      label: @team_labels,
-      year_2008: generate_data(2008)
+      labels: @team_labels,
+      matrix: generate_data(2013)
     }
   end
 
@@ -78,8 +78,8 @@ class GameMatchesController < ApplicationController
     GameMatch.where(year: year).all.each do |match|
       home_team_index = @team_labels.find_index(match.home_team)
       away_team_index = @team_labels.find_index(match.away_team)
-      team_matrix[home_team_index][away_team_index] += 1
-      team_matrix[away_team_index][home_team_index] += 1
+      team_matrix[home_team_index][away_team_index] += match.home_score
+      team_matrix[away_team_index][home_team_index] += match.away_score
     end
     team_matrix
   end

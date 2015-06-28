@@ -4,7 +4,52 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js?1.29.1"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 <div id='match_chord_diagram'></div>
+
+<style type="text/css">
+/*.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+/*.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}*/
+
+/* Style northward tooltips differently */
+/*.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}*/
+
+.tooltip{
+    text-align: center;
+    width: 60px;
+    height: 28px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: white;
+    border: 0px;
+    border-radius: 8px;
+}
+
+
+</style>
 
 <script type="text/javascript">
   var data = JSON.parse($('#game_visualisation').attr('data'));
@@ -20,12 +65,19 @@
 
   var formatPercent = d3.format(".1%");
 
+  var tooltip = d3.select("body")
+    .append("div")
+    .attr("class", "tooltip")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden");
+
   var arc = d3.svg.arc()
     .innerRadius(innerRadius)
     .outerRadius(outerRadius);
 
   var layout = d3.layout.chord()
-      .padding(0)
+      .padding(0.04)
       .sortSubgroups(d3.ascending)
       .sortChords(d3.descending);
 
@@ -41,6 +93,14 @@
 
   svg.append("circle")
     .attr("r", outerRadius);
+
+  var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .html(function(d) {
+      return d + ": <span style='color:orangered'>" + data.labels[1] + "</span>";
+    });
+
+  svg.call(tip);
 
   layout.matrix(data.matrix);
 
@@ -65,23 +125,44 @@
             + "translate(" + (r0 + 55) + ")"
             + (d.angle > Math.PI ? "rotate(180)" : "");
       })
-    .text(function(d, i) { return data.labels[i]; });
+    .text(function(d, i) {
+      return data.labels[i];
+    });
 
   var chord = svg.selectAll(".chord")
     .data(layout.chords)
     .enter().append("path")
     .attr("class", "chord")
     .style("fill", function(d) { return color(d.source.index); })
-    .style("stroke", function(d) { return d3.hsl(color(d.target.index)).darker(); })
-    .attr("d", d3.svg.chord().radius(innerRadius));
+    .style("stroke", "grey")
+    .attr("d", d3.svg.chord().radius(innerRadius))
+    .on("mouseover", function(d){return tooltip.style("visibility", "visible").text(d.source.index);})
+    .on("mousemove", function(d){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px").text(d.source.index);})
+    .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
   function fade(opacity) {
-  return function(d, i) {
-    svg.selectAll(".chord")
-        .filter(function(d) { return d.source.index != i && d.target.index != i; })
-      .transition()
-        .style("stroke-opacity", opacity)
-        .style("fill-opacity", opacity)
-  };
-}
+    return function(d, i) {
+      svg.selectAll(".chord")
+          .filter(function(d) { return d.source.index != i && d.target.index != i; })
+        .transition()
+          .style("stroke-opacity", opacity)
+          .style("fill-opacity", opacity)
+    };
+  }
+
+//   function fade_single(opacity) {
+//   return function() {
+//     var me = this;
+//     svg.selectAll("g.chord pathe")
+//         .filter(function(d) {
+//           return d != me;
+//         })
+//       .transition()
+//         .style("stroke-opacity", opacity)
+//           .style("fill-opacity", opacity)
+//   };
+// }
+
+
+
 </script>
