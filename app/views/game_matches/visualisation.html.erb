@@ -37,15 +37,12 @@
   left: 0;
 }*/
 
-.tooltip{
-    text-align: center;
+div.tooltip{
     width: 60px;
     height: 28px;
     padding: 2px;
     font: 12px sans-serif;
     background: white;
-    border: 0px;
-    border-radius: 8px;
 }
 
 
@@ -67,7 +64,14 @@
 
   var tooltip = d3.select("body")
     .append("div")
-    .attr("class", "tooltip")
+    .style("width", "200px")
+    .style("height", "50px")
+    .style("text-align", "center")
+    .style("background", "lightblue")
+    .style("padding", "2px")
+    .style("font", "12px sans-serif")
+    .style("border", "0px")
+    .style("border-radius", "8px")
     .style("position", "absolute")
     .style("z-index", "10")
     .style("visibility", "hidden");
@@ -136,8 +140,8 @@
     .style("fill", function(d) { return color(d.source.index); })
     .style("stroke", "grey")
     .attr("d", d3.svg.chord().radius(innerRadius))
-    .on("mouseover", function(d){return tooltip.style("visibility", "visible").text(d.source.index);})
-    .on("mousemove", function(d){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px").text(d.source.index);})
+    .on("mouseover", function(d){return tooltip.style("visibility", "visible").text(data.labels[d.source.index] + ": "+ d.source.value + " VS " + data.labels[d.target.index] + ": "+ d.target.value);})
+    .on("mousemove", function(d){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px").text(data.labels[d.source.index] + ": "+ d.source.value + " VS " + data.labels[d.target.index] + ": "+ d.target.value);})
     .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 
   function fade(opacity) {
