@@ -3,6 +3,12 @@ class GameMatch < ActiveRecord::Base
 
   has_and_belongs_to_many :teams
 
+  def self.link_games_teams
+    GameMatch.each do |game|
+      game.teams
+    end
+  end
+
   # def self.import
   #   file = '2010-Table1.csv'
   #   CSV.foreach(file, headers: true) do |row|
