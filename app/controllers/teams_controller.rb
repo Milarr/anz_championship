@@ -62,7 +62,36 @@ class TeamsController < ApplicationController
   end
 
   def visualisation
+    @team_labels = []
+    Team.all.each do |team|
+      @team_labels << team.name
+    end
 
+    @team_overview_data = {
+      lables: @team_labels,
+      data_set: generate_data(2008)
+    }
+
+  end
+
+  def generate_data(year)
+    team_data = []
+    other_team_data = []
+    i = 0
+    GameMatch.where(year: year).where(home_team: "Central Pulse").all.each do |game|
+      team_data << {x: i, y: game.home_score}
+      other_team_data << {x: i, y: game.away_score}
+      i += 1
+    end
+    # GameMatch.where(away_team: "Central Pulse").each do |game|
+    #   team_data << {x: i, y: game.away_score}
+    #   other_team_data << {x: i, y: game.home_score}
+    #   i += 1
+    # end
+    {
+      our_team: team_data,
+      other_team: other_team_data
+    }
   end
 
   private
